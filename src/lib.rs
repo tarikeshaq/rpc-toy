@@ -10,7 +10,7 @@
 //! This library is built upon two main protocols/concepts:
 //! - JSON serialization
 //! - TCP
-//! 
+//!
 //! `JSON` is used for everything as a convinient (yet probably slow) way
 //! to serialize data types to strings. Then, the strings are converted to
 //! `UTF8` bytes and passed down.
@@ -54,7 +54,7 @@
 //! server.listen("127.0.0.1:3001").unwrap();
 //! ```
 //! ### Message encodings:
-//! 
+//!
 //! |  The client message encoding                        |
 //! | :-------------------------------------------------: |
 //! | 32 bits for the length of the function name         |
@@ -63,13 +63,13 @@
 //! | The argument encoded as JSON string utf8            |
 //! | second argument length, or zero for termination     |
 //! | Repeats until termination ...                       |
-//! ----------------------------------------------------- 
+//! -----------------------------------------------------
 //!
 //! |  The server message encoding                        |
 //! | :-------------------------------------------------: |
 //! | 32 bits for the length of the response              |
 //! | The response encoded as a JSON string utf8          |
-//! ----------------------------------------------------- 
+//! -----------------------------------------------------
 mod error;
 pub use error::Error;
 type Result<T, E = error::Error> = std::result::Result<T, E>;
@@ -227,10 +227,9 @@ impl Server {
         for incoming in listener.incoming() {
             let stream = incoming?;
             crossbeam::thread::scope(move |s| {
-                s.spawn(move |_| {
-                    self.handle_client(stream)
-                });
-            }).ok();
+                s.spawn(move |_| self.handle_client(stream));
+            })
+            .ok();
         }
         Ok(())
     }
