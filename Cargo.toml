@@ -6,6 +6,7 @@ edition = "2018"
 license = "MIT"
 repository = "https://github.com/tarikeshaq/rpc-toy"
 readme = "README.md"
+description = "A toy RPC framework, DO NOT USE"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
