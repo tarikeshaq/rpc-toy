@@ -1,6 +1,6 @@
 [package]
 name = "rpc-toy"
-version = "0.1.2-alpha.0"
+version = "0.1.2"
 authors = ["Tarik Eshaq <tarikeshaq@gmail.com>"]
 edition = "2018"
 license = "MIT"
