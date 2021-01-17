@@ -142,31 +142,31 @@ impl Client {
             bytes.extend_from_slice(arg);
         }
         bytes.extend_from_slice(&(0u32).to_be_bytes());
-        self.stream.write(&bytes)?;
+        self.stream.write_all(&bytes)?;
         let mut response_len = [0; 4];
-        self.stream.read(&mut response_len)?;
+        self.stream.read_exact(&mut response_len)?;
         let response_len = u32::from_be_bytes(response_len);
         if response_len == 0 {
             // void function
             return Ok(None);
         }
         let mut response = vec![0; response_len as usize];
-        self.stream.read(&mut response)?;
+        self.stream.read_exact(&mut response)?;
         let response = std::str::from_utf8(&response)?;
-        return Ok(Some(serde_json::from_str(response)?));
+        Ok(Some(serde_json::from_str(response)?))
     }
 }
 
 use std::sync::Mutex;
+type RPCFn = Box<dyn Fn(&[serde_json::Value]) -> Option<serde_json::Value> + Send>;
 
 /// A struct representing an RPC server, this is to be
 /// used to implement the server.
+#[derive(Default)]
 pub struct Server {
     // At the time this looks ugly and there is currently no
     // way to alias function traits :(
-    fn_table: Mutex<
-        HashMap<String, Box<dyn Fn(&[serde_json::Value]) -> Option<serde_json::Value> + Send>>,
-    >,
+    fn_table: Mutex<HashMap<String, RPCFn>>,
 }
 
 impl Server {
@@ -238,7 +238,7 @@ impl Server {
         // We first read the lenght of the name of the function
         // that should be encoded as a big endian 4 byte value
         let mut fn_name_len = [0; 4];
-        while let Ok(_) = stream.read_exact(&mut fn_name_len) {
+        while stream.read_exact(&mut fn_name_len).is_ok() {
             let fn_name_len = u32::from_be_bytes(fn_name_len);
             let mut fn_name = vec![0; fn_name_len as usize];
             // We then read the name of the function as a utf8 formatted
@@ -268,11 +268,11 @@ impl Server {
                     Some(res) => {
                         let res_str = serde_json::to_string(&res)?;
                         let res = res_str.as_bytes();
-                        stream.write(&(res.len() as u32).to_be_bytes())?;
-                        stream.write(res)?;
+                        stream.write_all(&(res.len() as u32).to_be_bytes())?;
+                        stream.write_all(res)?;
                     }
                     None => {
-                        stream.write(&(0 as u32).to_be_bytes())?;
+                        stream.write_all(&(0 as u32).to_be_bytes())?;
                     }
                 }
             } else {
