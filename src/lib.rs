@@ -272,7 +272,7 @@ impl Server {
                         stream.write_all(res)?;
                     }
                     None => {
-                        stream.write_all(&(0 as u32).to_be_bytes())?;
+                        stream.write_all(&(0_u32).to_be_bytes())?;
                     }
                 }
             } else {
