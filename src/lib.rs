@@ -25,7 +25,7 @@
 //!
 //! ### Examples:
 //! #### Example Client
-//! ```rust
+//! ```no_run
 //! use rpc_toy::Client;
 //! // You can create a new client using "new"
 //! let mut client = Client::new("127.0.0.1:3001").unwrap();
@@ -40,7 +40,7 @@
 //! assert_eq!(three, 3);
 //! ```
 //! #### Example Server
-//! ```rust
+//! ```no_run
 //! use rpc_toy::Server;
 //! let mut server = Server::new();
 //! server.register("Add", |args| {
@@ -218,7 +218,7 @@ impl Server {
     ///     "host:port"
     /// # Examples:
     /// ```no_run
-    /// use rpc_toy::Server
+    /// use rpc_toy::Server;
     /// let mut server = Server::new();
     /// server.listen("127.0.0.1:3001").unwrap();
     /// ```
